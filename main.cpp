@@ -1,46 +1,85 @@
 #include <iostream>
 #include <vector>
+#include <unistd.h>
+
 
 using namespace std;
 
 void stringToTokens(string& inputStr, string* arrPtr);
 int numberOfTokens(string& inputStr);
 string getLine();
+bool fillIndicesOfCommandTokens(vector<int>* commandIndices, string* tokenArr, int tokenCount);
+
 
 static string PIPE_CHAR = "|";
 
+static string ERR_MSG_PIPE_ERROR = "Invalid syntax. Pipe operator must be preceded and followed by a token group.";
+
 int main() {
 
-
     while (1) {
+        vector<int> commandIndices;
+        int tokenCount;
+        bool pipeError;
+        vector<pid_t> pidVec;
+
+        // read in a line
         string lineStr = getLine();
 
-        vector<int> commandIndices;
-        int tokenCount = numberOfTokens(lineStr);
+        // find the number of tokens
+        tokenCount = numberOfTokens(lineStr);
 
+        // allocate the token array
         string tokenArr[tokenCount];
+
+        // fill the token array from the input string
         stringToTokens(lineStr, tokenArr);
 
-        if (tokenArr->length() > 0) {
-            commandIndices.push_back(0);
+        // fill the command indices into the vector
+        pipeError = fillIndicesOfCommandTokens(&commandIndices, tokenArr, tokenCount);
+
+        // if there is a misplaced pipe, cerr the pipe error
+        if (pipeError) {
+            cerr << ERR_MSG_PIPE_ERROR << endl;
         }
-        for (int i = 0; i < tokenCount + 1; i += 1) {
-            if (tokenArr[i] == PIPE_CHAR) {
-                if (i != tokenCount - 1) {
-                    commandIndices.push_back(i + 1);
+
+        // execute first token and those following pipes
+
+        for (int commandNumber = 0; commandNumber < commandIndices.size(); commandNumber += 1) {
+           pid_t pid = fork();
+            string commandName = tokenArr[commandIndices[commandNumber]];
+
+//            vector<string> optionsVec;
+//            int tokenInd = commandIndices[commandNumber];
+//            while (tokenInd < tokenArr->length() && tokenArr[tokenInd] != PIPE_CHAR) {
+//                cout << tokenArr[tokenInd] << endl;
+//                optionsVec.push_back(tokenArr[tokenInd]);
+//                tokenInd++;
+//            }
+
+
+
+            if (pid == 0) {
+
+                // redirection
+                // execve
+                //execve(commandName.c_str(), optionsArr, NULL);
+            } else {
+                vector<string> optionsVec;
+                int tokenInd = commandIndices[commandNumber];
+                while (tokenInd < tokenArr->length() && tokenArr[tokenInd] != PIPE_CHAR) {
+                    cout << tokenArr[tokenInd] << endl;
+                    optionsVec.push_back(tokenArr[tokenInd]);
+                    tokenInd++;
                 }
-                else {
-                    // ERROR
-                }
+
+                pidVec.push_back(pid);
             }
         }
-
-        for (int i = 0; i < commandIndices.size(); i++)
-            cout << commandIndices[i] << endl;
-
-
-        // find all pipe operators
-        // execute first token and those following pipes
+        for (int commandNumber = 0; commandNumber < commandIndices.size(); commandNumber += 1) {
+            int status;
+            waitpid(pidVec[commandNumber], &status, WNOHANG);
+        }
 
 //        read a line of input
 //        parse the line
@@ -58,7 +97,7 @@ int main() {
 //                waitpid (stored pid, &status);
 //                check return code placed in status;
 //        }
-        if (lineStr == "exit" || lineStr == "quit") {
+        if (lineStr == "exit") {
             break;
         }
     }
@@ -113,11 +152,18 @@ void stringToTokens(string &inputStr, string* arrPtr) {
     int currIndex = 0;
     string whitespace = " \t";
 
+
     // find first and last non-whitespace characters
     size_t beginPosition = inputStr.find_first_not_of(whitespace);
     size_t endPosition = inputStr.find_last_not_of(whitespace);
 
     i = (int) beginPosition;
+
+    if (beginPosition == endPosition && inputStr[beginPosition] != whitespace[0]
+                                     && inputStr[beginPosition] != whitespace[1]) {
+        arrPtr[0] = inputStr[beginPosition];
+        return;
+    }
 
     // iterate over string
     while (i < endPosition) {
@@ -130,13 +176,13 @@ void stringToTokens(string &inputStr, string* arrPtr) {
         int tokenBeginIndex = i;
 
         // increment i until a WS char is found
-        while (inputStr[i] != whitespace[0] && inputStr[i] != whitespace[1]) {
+        while (inputStr[i] != whitespace[0] && inputStr[i] != whitespace[1] && i <= endPosition) {
             i += 1;
         }
         // set token end index to current pos -- first WS char
         int tokenEndIndex = i;
 
-        string token = inputStr.substr(tokenBeginIndex, tokenEndIndex - tokenBeginIndex);
+        string token = inputStr.substr((unsigned long) tokenBeginIndex, (unsigned long) (tokenEndIndex - tokenBeginIndex));
 
         // save the token into the token array
         arrPtr[currIndex] = token;
@@ -144,6 +190,28 @@ void stringToTokens(string &inputStr, string* arrPtr) {
         // increment the pointer index
         currIndex += 1;
     }
+}
+
+bool fillIndicesOfCommandTokens(vector<int>* commandIndices, string* tokenArr, int tokenCount) {
+    // the first token must be a command
+    if (tokenArr->length() > 0) {
+        commandIndices->push_back(0);
+    }
+    for (int i = 0; i < tokenCount + 1; i += 1) {
+        if (tokenArr[i] == PIPE_CHAR) {
+            // ensure the pipe is not the last token
+            if (i != tokenCount - 1 && i != 0) {
+                // add the index to the command indices
+                commandIndices->push_back(i + 1);
+            }
+            else {
+                // true if error
+                return true;
+            }
+        }
+    }
+    // if no error, false
+    return false;
 }
 
 // 2. Interpretation of commands
