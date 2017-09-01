@@ -115,7 +115,11 @@ int main() {
                               commandName : cwd + STD_FILE_SEP + commandName;
 
 
-                execve(path, optionsArray, )
+                int error = execve(path.c_str(), (char * const *) optionsArray, nullptr);
+
+                if (error == -1) {
+                    cerr << "error in exec" << endl;
+                }
             }
             else if (pid > 0){
                 // parent process
