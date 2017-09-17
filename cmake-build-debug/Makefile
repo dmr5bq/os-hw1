@@ -123,32 +123,32 @@ cs4414_hw1_ritchey/fast:
 	$(MAKE) -f CMakeFiles/cs4414_hw1_ritchey.dir/build.make CMakeFiles/cs4414_hw1_ritchey.dir/build
 .PHONY : cs4414_hw1_ritchey/fast
 
-main.o: main.cpp.o
+msh.o: msh.cpp.o
 
-.PHONY : main.o
+.PHONY : msh.o
 
 # target to build an object file
-main.cpp.o:
-	$(MAKE) -f CMakeFiles/cs4414_hw1_ritchey.dir/build.make CMakeFiles/cs4414_hw1_ritchey.dir/main.cpp.o
-.PHONY : main.cpp.o
+msh.cpp.o:
+	$(MAKE) -f CMakeFiles/cs4414_hw1_ritchey.dir/build.make CMakeFiles/cs4414_hw1_ritchey.dir/msh.cpp.o
+.PHONY : msh.cpp.o
 
-main.i: main.cpp.i
+msh.i: msh.cpp.i
 
-.PHONY : main.i
+.PHONY : msh.i
 
 # target to preprocess a source file
-main.cpp.i:
-	$(MAKE) -f CMakeFiles/cs4414_hw1_ritchey.dir/build.make CMakeFiles/cs4414_hw1_ritchey.dir/main.cpp.i
-.PHONY : main.cpp.i
+msh.cpp.i:
+	$(MAKE) -f CMakeFiles/cs4414_hw1_ritchey.dir/build.make CMakeFiles/cs4414_hw1_ritchey.dir/msh.cpp.i
+.PHONY : msh.cpp.i
 
-main.s: main.cpp.s
+msh.s: msh.cpp.s
 
-.PHONY : main.s
+.PHONY : msh.s
 
 # target to generate assembly for a file
-main.cpp.s:
-	$(MAKE) -f CMakeFiles/cs4414_hw1_ritchey.dir/build.make CMakeFiles/cs4414_hw1_ritchey.dir/main.cpp.s
-.PHONY : main.cpp.s
+msh.cpp.s:
+	$(MAKE) -f CMakeFiles/cs4414_hw1_ritchey.dir/build.make CMakeFiles/cs4414_hw1_ritchey.dir/msh.cpp.s
+.PHONY : msh.cpp.s
 
 # Help Target
 help:
@@ -159,9 +159,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... cs4414_hw1_ritchey"
-	@echo "... main.o"
-	@echo "... main.i"
-	@echo "... main.s"
+	@echo "... msh.o"
+	@echo "... msh.i"
+	@echo "... msh.s"
 .PHONY : help
 
 

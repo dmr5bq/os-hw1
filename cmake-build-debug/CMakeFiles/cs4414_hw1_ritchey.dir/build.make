@@ -57,38 +57,38 @@ include CMakeFiles/cs4414_hw1_ritchey.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/cs4414_hw1_ritchey.dir/flags.make
 
-CMakeFiles/cs4414_hw1_ritchey.dir/main.cpp.o: CMakeFiles/cs4414_hw1_ritchey.dir/flags.make
-CMakeFiles/cs4414_hw1_ritchey.dir/main.cpp.o: ../main.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/dmr5bq/Desktop/cs4414-hw1-ritchey/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/cs4414_hw1_ritchey.dir/main.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/cs4414_hw1_ritchey.dir/main.cpp.o -c /Users/dmr5bq/Desktop/cs4414-hw1-ritchey/main.cpp
+CMakeFiles/cs4414_hw1_ritchey.dir/msh.cpp.o: CMakeFiles/cs4414_hw1_ritchey.dir/flags.make
+CMakeFiles/cs4414_hw1_ritchey.dir/msh.cpp.o: ../msh.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/dmr5bq/Desktop/cs4414-hw1-ritchey/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/cs4414_hw1_ritchey.dir/msh.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/cs4414_hw1_ritchey.dir/msh.cpp.o -c /Users/dmr5bq/Desktop/cs4414-hw1-ritchey/msh.cpp
 
-CMakeFiles/cs4414_hw1_ritchey.dir/main.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/cs4414_hw1_ritchey.dir/main.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/dmr5bq/Desktop/cs4414-hw1-ritchey/main.cpp > CMakeFiles/cs4414_hw1_ritchey.dir/main.cpp.i
+CMakeFiles/cs4414_hw1_ritchey.dir/msh.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/cs4414_hw1_ritchey.dir/msh.cpp.i"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/dmr5bq/Desktop/cs4414-hw1-ritchey/msh.cpp > CMakeFiles/cs4414_hw1_ritchey.dir/msh.cpp.i
 
-CMakeFiles/cs4414_hw1_ritchey.dir/main.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/cs4414_hw1_ritchey.dir/main.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/dmr5bq/Desktop/cs4414-hw1-ritchey/main.cpp -o CMakeFiles/cs4414_hw1_ritchey.dir/main.cpp.s
+CMakeFiles/cs4414_hw1_ritchey.dir/msh.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/cs4414_hw1_ritchey.dir/msh.cpp.s"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/dmr5bq/Desktop/cs4414-hw1-ritchey/msh.cpp -o CMakeFiles/cs4414_hw1_ritchey.dir/msh.cpp.s
 
-CMakeFiles/cs4414_hw1_ritchey.dir/main.cpp.o.requires:
+CMakeFiles/cs4414_hw1_ritchey.dir/msh.cpp.o.requires:
 
-.PHONY : CMakeFiles/cs4414_hw1_ritchey.dir/main.cpp.o.requires
+.PHONY : CMakeFiles/cs4414_hw1_ritchey.dir/msh.cpp.o.requires
 
-CMakeFiles/cs4414_hw1_ritchey.dir/main.cpp.o.provides: CMakeFiles/cs4414_hw1_ritchey.dir/main.cpp.o.requires
-	$(MAKE) -f CMakeFiles/cs4414_hw1_ritchey.dir/build.make CMakeFiles/cs4414_hw1_ritchey.dir/main.cpp.o.provides.build
-.PHONY : CMakeFiles/cs4414_hw1_ritchey.dir/main.cpp.o.provides
+CMakeFiles/cs4414_hw1_ritchey.dir/msh.cpp.o.provides: CMakeFiles/cs4414_hw1_ritchey.dir/msh.cpp.o.requires
+	$(MAKE) -f CMakeFiles/cs4414_hw1_ritchey.dir/build.make CMakeFiles/cs4414_hw1_ritchey.dir/msh.cpp.o.provides.build
+.PHONY : CMakeFiles/cs4414_hw1_ritchey.dir/msh.cpp.o.provides
 
-CMakeFiles/cs4414_hw1_ritchey.dir/main.cpp.o.provides.build: CMakeFiles/cs4414_hw1_ritchey.dir/main.cpp.o
+CMakeFiles/cs4414_hw1_ritchey.dir/msh.cpp.o.provides.build: CMakeFiles/cs4414_hw1_ritchey.dir/msh.cpp.o
 
 
 # Object files for target cs4414_hw1_ritchey
 cs4414_hw1_ritchey_OBJECTS = \
-"CMakeFiles/cs4414_hw1_ritchey.dir/main.cpp.o"
+"CMakeFiles/cs4414_hw1_ritchey.dir/msh.cpp.o"
 
 # External object files for target cs4414_hw1_ritchey
 cs4414_hw1_ritchey_EXTERNAL_OBJECTS =
 
-cs4414_hw1_ritchey: CMakeFiles/cs4414_hw1_ritchey.dir/main.cpp.o
+cs4414_hw1_ritchey: CMakeFiles/cs4414_hw1_ritchey.dir/msh.cpp.o
 cs4414_hw1_ritchey: CMakeFiles/cs4414_hw1_ritchey.dir/build.make
 cs4414_hw1_ritchey: CMakeFiles/cs4414_hw1_ritchey.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/dmr5bq/Desktop/cs4414-hw1-ritchey/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable cs4414_hw1_ritchey"
@@ -99,7 +99,7 @@ CMakeFiles/cs4414_hw1_ritchey.dir/build: cs4414_hw1_ritchey
 
 .PHONY : CMakeFiles/cs4414_hw1_ritchey.dir/build
 
-CMakeFiles/cs4414_hw1_ritchey.dir/requires: CMakeFiles/cs4414_hw1_ritchey.dir/main.cpp.o.requires
+CMakeFiles/cs4414_hw1_ritchey.dir/requires: CMakeFiles/cs4414_hw1_ritchey.dir/msh.cpp.o.requires
 
 .PHONY : CMakeFiles/cs4414_hw1_ritchey.dir/requires
 

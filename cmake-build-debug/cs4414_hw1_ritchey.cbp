@@ -82,7 +82,7 @@
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/Users/dmr5bq/Desktop/cs4414-hw1-ritchey/main.cpp">
+		<Unit filename="/Users/dmr5bq/Desktop/cs4414-hw1-ritchey/msh.cpp">
 			<Option target="cs4414_hw1_ritchey"/>
 		</Unit>
 		<Unit filename="/Users/dmr5bq/Desktop/cs4414-hw1-ritchey/CMakeLists.txt">
