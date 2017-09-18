@@ -47,10 +47,11 @@ const string STD_OUTPUT_REDIR_CHAR = ">";// file output redirection char in Unix
 /* Error messages used below */
 const string ERR_MSG_PIPE_ERROR =   "Invalid syntax. Pipe operator must be preceded and followed by a token group.";
 const string ERR_MSG_LENGTH =       "Lines of input to the shell must be less than 100 characters in length.";
-const string ERR_MSG_REGEX =        "Lines must consist of characters A–Z, a–z, 0–9, dash, dot, >, <, forward slash, and underscore";
+const string ERR_MSG_REGEX =        "Tokens must be pipes or consist of characters A–Z, a–z, 0–9, dash, dot, >, <, forward slash, and underscore";
 const string ERR_MSG_SYS_ERROR =    "Something went wrong when creating a new process.";
 const string ERR_MSG_CMD_GRP =      "Not a valid command group";
 const string ERR_MSG_IO_DESIGNATED = "A file redirection has already been specified";
+
 
 int main(int argc, char** argv) {
     ifstream infile;
@@ -101,6 +102,9 @@ int main(int argc, char** argv) {
             cerr << ERR_MSG_REGEX << endl;
             goto loopStart;
         }
+
+        if (argc > 1 && infile.eof())
+            exit(0);
 
         // find the number of tokens
         numberOfTokens = getNumberOfTokens(lineStr);
@@ -154,17 +158,17 @@ int main(int argc, char** argv) {
                  tokenArr[i] != PIPE_CHAR && i < numberOfTokens;
                  i += 1) {
 
-                if (tokenArr[i] == STD_INPUT_REDIR_CHAR && !inputDesignatedFlag) {
-                    if (i + 1 < numberOfTokens) {
-                        if (commandNumber != 0) {
-                            cerr << ERR_MSG_CMD_GRP << endl;
-                            goto loopStart;
-                        }
-                        if (inputDesignatedFlag) {
-                            cerr << ERR_MSG_IO_DESIGNATED << endl;
-                            goto loopStart;
-                        }
-                        if (tokenArr[i + 1] != PIPE_CHAR) {
+                if (tokenArr[i] == STD_INPUT_REDIR_CHAR) {
+                    if (commandNumber != 0) {
+                        cerr << ERR_MSG_CMD_GRP << endl;
+                        goto loopStart;
+                    }
+                    else if (inputDesignatedFlag) {
+                        cerr << ERR_MSG_IO_DESIGNATED << endl;
+                        goto loopStart;
+                    }
+                    else if (i + 1 < numberOfTokens) {
+                         if (tokenArr[i + 1] != PIPE_CHAR) {
                             iFileName = tokenArr[i + 1];
                             inputDesignatedFlag = true;
                         } else {
@@ -179,11 +183,11 @@ int main(int argc, char** argv) {
                         cerr << ERR_MSG_CMD_GRP << endl;
                         goto loopStart;
                     }
-                    if (outputDesignatedFlag) {
+                    else if (outputDesignatedFlag) {
                         cerr << ERR_MSG_IO_DESIGNATED << endl;
                         goto loopStart;
                     }
-                    if (i + 1 < numberOfTokens) {
+                    else if (i + 1 < numberOfTokens) {
                         if (tokenArr[i + 1] != PIPE_CHAR) {
                             oFileName = tokenArr[i + 1];
                             outputDesignatedFlag = true;
@@ -203,14 +207,14 @@ int main(int argc, char** argv) {
             numberOfOptions = (int) optionsVector.size();
 
             // allocate array to be passed to argv
-            const char* optionsArray[numberOfOptions + 1];
+            const char* argv[numberOfOptions + 1];
 
-            optionsArray[0] = commandName;
-            optionsArray[numberOfOptions] =  NULL;
+            argv[0] = commandName;
+            argv[numberOfOptions] =  NULL;
 
             // convert vector to an array
             for (int i = 1 ; i < numberOfOptions; i += 1) {
-                optionsArray[i] = optionsVector[i].c_str();
+                argv[i] = optionsVector[i].c_str();
             }
 
 
@@ -233,9 +237,16 @@ int main(int argc, char** argv) {
                                       iFileName : absInPath;
 
                         int inFD = open(inPath.c_str(), O_RDONLY);
+
+                        if (inFD == -1) {
+                            cerr << strerror(errno) << endl;
+                            goto loopStart;
+                        }
+
                         int dupErr = dup2(inFD, STDIN_FILENO);
                         if (dupErr == -1) {
                             cerr << strerror(errno) << endl;
+                            goto loopStart;
                         }
                     }
                 }
@@ -260,7 +271,7 @@ int main(int argc, char** argv) {
                         string outPath = ((string) oFileName).at(0) == STD_FILE_SEP.at(0) ?
                                         oFileName : absOutPath;
 
-                        int outFD = open(outPath.c_str(), O_WRONLY);
+                        int outFD = open(outPath.c_str(), O_WRONLY|O_CREAT);
                         int dupErr = dup2(outFD, STDOUT_FILENO);
                         if (dupErr == -1) {
                             cerr << strerror(errno) << endl;
@@ -268,9 +279,9 @@ int main(int argc, char** argv) {
                     }
                 }
 
-                int error = execve(path.c_str(), (char * const *) optionsArray, NULL);
+                int execError = execve(path.c_str(), (char * const *) argv, NULL);
 
-                if (error == -1) {
+                if (execError == -1) {
                     cerr  << strerror(errno) << endl;
                 }
 
@@ -286,20 +297,23 @@ int main(int argc, char** argv) {
                 continue;
             }
         }
-        int numberOfProcesses = (int) pidVec.size();
+
 
 
         for (int i = 0; i < numberOfCommands; i++) {
             close(pipes[i][READ_END]);
             close(pipes[i][WRITE_END]);
         }
-        for (int i = 0; i < numberOfProcesses; i += 1) {
-            int status;
-            waitpid(pidVec[i], &status, NULL);
-            cout << "Process " << tokenArr[commandIndices[i]] << " exited with status code " << status << endl;
+
+        int statuses[numberOfCommands];
+
+        for (int i = 0; i < numberOfCommands; i += 1) {
+            waitpid(pidVec[i], &statuses[i], (int) NULL);
         }
-        if (argc > 1 && infile.eof())
-            exit(0);
+
+        for (int i = 0; i < numberOfCommands; i++) {
+            cout << "Process " << tokenArr[commandIndices[i]] << " exited with status code " << statuses[i] << endl;
+        }
 
     } while (true);
     if (argc > 1)
