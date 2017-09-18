@@ -32,6 +32,7 @@ int getNumberOfTokens(string& inputStr);
 string getLine();
 bool fillIndicesOfCommandTokens(vector<int>* commandIndices, string* tokenArr, int tokenCount);
 bool isValidToken(string token);
+string getPath(string filename);
 
 const int    READ_END =     0;      // pipe read-end integer
 const int    WRITE_END =    1;      // pipe write-end integer
@@ -143,57 +144,48 @@ int main(int argc, char** argv) {
             const char * commandName = tokenArr[commandIndices[commandNumber]].c_str();
             int  indexOfCommand = commandIndices[commandNumber];
 
-            char cwd[CWD_BUFFER_LENGTH];
-            getcwd(cwd, CWD_BUFFER_LENGTH);
-
-            string absPath = cwd;
-            absPath += STD_FILE_SEP;
-            absPath += commandName;
-
-            string path = ((string) commandName).at(0) == STD_FILE_SEP.at(0) ?
-                          commandName : absPath;
-
-            // grab all of the options following commands and put them into a vector
+            /* Process command group options */
             for (int i = indexOfCommand;
                  tokenArr[i] != PIPE_CHAR && i < numberOfTokens;
-                 i += 1) {
+                 i += 1) { /* Loop through all of the tokens before a pipe or the end of array */
 
-                if (tokenArr[i] == STD_INPUT_REDIR_CHAR) {
-                    if (commandNumber != 0) {
+                /* Handle input redirection */
+                if (tokenArr[i] == STD_INPUT_REDIR_CHAR) {      /* token = < */
+                    if (commandNumber != 0) {                   /* Input redirection can only happen in the FIRST command group */
                         cerr << ERR_MSG_CMD_GRP << endl;
-                        goto loopStart;
+                        goto loopStart; /* Restart -> Get next line */
                     }
-                    else if (inputDesignatedFlag) {
+                    else if (inputDesignatedFlag) {             /* Syntax error if there has already been designated input */
                         cerr << ERR_MSG_IO_DESIGNATED << endl;
-                        goto loopStart;
+                        goto loopStart; /* Restart -> Get next line */
                     }
-                    else if (i + 1 < numberOfTokens) {
-                         if (tokenArr[i + 1] != PIPE_CHAR) {
-                            iFileName = tokenArr[i + 1];
-                            inputDesignatedFlag = true;
+                    else if (i + 1 < numberOfTokens) {          /* Make sure the < is not the last character */
+                         if (tokenArr[i + 1] != PIPE_CHAR) {    /* Make sure there is a filename specified after the < */
+                            iFileName = tokenArr[i + 1];        /* Input is valid, save the input file name */
+                            inputDesignatedFlag = true;         /* Set flag to make sure no further input is saved */
                         } else {
                             cerr << ERR_MSG_CMD_GRP << endl;
-                            goto loopStart;
+                            goto loopStart; /* Restart -> Get next line */
                         }
-                        i++;
+                        i++; /* Pass over the filename token */
                     }
                 }
-                else if (tokenArr[i] == STD_OUTPUT_REDIR_CHAR){
-                    if (commandNumber != numberOfCommands - 1) {
+                else if (tokenArr[i] == STD_OUTPUT_REDIR_CHAR){  /* token = > */
+                    if (commandNumber != numberOfCommands - 1) { /* Output redirection can only happen in the LAST command group */
                         cerr << ERR_MSG_CMD_GRP << endl;
-                        goto loopStart;
+                        goto loopStart; /* Restart -> Get next line */
                     }
-                    else if (outputDesignatedFlag) {
+                    else if (outputDesignatedFlag) {            /* Syntax error if there has already been designated output */
                         cerr << ERR_MSG_IO_DESIGNATED << endl;
-                        goto loopStart;
+                        goto loopStart; /* Restart -> Get next line */
                     }
-                    else if (i + 1 < numberOfTokens) {
-                        if (tokenArr[i + 1] != PIPE_CHAR) {
-                            oFileName = tokenArr[i + 1];
-                            outputDesignatedFlag = true;
+                    else if (i + 1 < numberOfTokens) {          /* Make sure the < is not the last character */
+                        if (tokenArr[i + 1] != PIPE_CHAR) {     /* Make sure there is a filename specified after the < */
+                            oFileName = tokenArr[i + 1];        /* Output is valid, save the output file name */
+                            outputDesignatedFlag = true;        /* Input is valid, save the input file name */
                         } else {
                             cerr << ERR_MSG_CMD_GRP << endl;
-                            goto loopStart;
+                            goto loopStart; /* Restart -> Get next line */
                         }
                         i++;
                     }
@@ -229,12 +221,7 @@ int main(int argc, char** argv) {
             if (pid == CHILD_PID) {
                 if (commandNumber == 0) {
                     if (iFileName.length() > 0) {
-                        string absInPath = cwd;
-                        absInPath += STD_FILE_SEP;
-                        absInPath += iFileName;
-
-                        string inPath = ((string) iFileName).at(0) == STD_FILE_SEP.at(0) ?
-                                      iFileName : absInPath;
+                        string inPath = getPath(iFileName);
 
                         int inFD = open(inPath.c_str(), O_RDONLY);
 
@@ -264,21 +251,18 @@ int main(int argc, char** argv) {
                 }
                 if (commandNumber == numberOfCommands - 1) {
                     if (oFileName.length() > 0) {
-                        string absOutPath = cwd;
-                        absOutPath += STD_FILE_SEP;
-                        absOutPath += oFileName;
-
-                        string outPath = ((string) oFileName).at(0) == STD_FILE_SEP.at(0) ?
-                                        oFileName : absOutPath;
+                        string outPath = getPath(oFileName);
 
                         int outFD = open(outPath.c_str(), O_WRONLY|O_CREAT);
                         int dupErr = dup2(outFD, STDOUT_FILENO);
                         if (dupErr == -1) {
                             cerr << strerror(errno) << endl;
+                            goto loopStart;
                         }
                     }
                 }
 
+                string path = getPath(commandName);
                 int execError = execve(path.c_str(), (char * const *) argv, NULL);
 
                 if (execError == -1) {
@@ -312,7 +296,7 @@ int main(int argc, char** argv) {
         }
 
         for (int i = 0; i < numberOfCommands; i++) {
-            cout << "Process " << tokenArr[commandIndices[i]] << " exited with status code " << statuses[i] << endl;
+            cout << "Process " << tokenArr[commandIndices[i]] << " exited with exit code " << statuses[i] << endl;
         }
 
     } while (true);
@@ -322,7 +306,7 @@ int main(int argc, char** argv) {
 }
 
 
-string getPath(string commandName) {
+string getPath(string filename) {
     // child process
     // get the cwd for file redirects
     char cwd[CWD_BUFFER_LENGTH];
@@ -330,10 +314,10 @@ string getPath(string commandName) {
 
     string absPath = cwd;
     absPath += STD_FILE_SEP;
-    absPath += commandName;
+    absPath += filename;
 
-    string path = ((string) commandName).at(0) == STD_FILE_SEP.at(0) ?
-                  commandName : absPath;
+    string path = ((string) filename).at(0) == STD_FILE_SEP.at(0) ?
+                  filename : absPath;
 
     return path;
 }
